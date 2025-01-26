@@ -1,0 +1,32 @@
+{
+  "name": "aprix-api",
+  "version": "1.0.0",
+  "description": "This API is used by Aprix to power its features.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/eric-fahendrena/aprix-api.git"
+  },
+  "keywords": [
+    "aprix-api"
+  ],
+  "author": "Jean Eric Razanapahendrena",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eric-fahendrena/aprix-api/issues"
+  },
+  "homepage": "https://github.com/eric-fahendrena/aprix-api#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2"
+  }
+}
