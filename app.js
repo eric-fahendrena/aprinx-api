@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
+import coursesRoutes from "./routes/courses.routes.js";
 
 dotenv.config();
 
@@ -17,5 +18,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/courses", coursesRoutes);
 
 export default app;
