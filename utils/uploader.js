@@ -18,12 +18,24 @@ cloudinary.config({
   api_secret: "pP-Iz5UFdxmVS_WpCTUvnjvJxJo",
 });
 
-export const uploadVideo = (file, publicId) => {
-  cloudinary.uploader.upload(file, {
-    resource_type: "video",
-    public_id: publicId,
-    overwrite: false,
-  }).then(result => console.log(result));
+export const uploadVideo = async (file, publicId) => {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      resource_type: "video",
+      public_id: publicId,
+      overwrite: false,
+    });
+    fs.unlink(file, (err) => {
+      if (err) {
+        console.log("Error", err);
+        return;
+      }
+      console.log("File", file, "unlinked");
+    });
+    return result;
+  } catch (error) {
+    console.error("Error", error);
+  }
 };
 
 export const uploadPhoto = async (file, publicId) => {
