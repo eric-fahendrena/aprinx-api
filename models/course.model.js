@@ -1,14 +1,17 @@
 import pool from "../db/pool.js";
 
 export const addCourse = async (cData) => {
+  console.log("C data", cData);
   if (!cData.cover_photo || !cData.category || !cData.title || !cData.description) {
-    throw new Error("invalid credentials");
+    console.error("Invalid credential");
+    return false;
   }
-  const query = "INSERT INTO courses(author_id, cover_photo, category, title, description, date) VALUES($1, $2, $3, $4, $5, $6) RETURNING *";
+  const query = "INSERT INTO courses(author_id, cover_photo, category, price, title, description, date) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *";
   const result = await pool.query(query, [
     cData.author_id,
     cData.cover_photo,
     cData.category,
+    cData.price,
     cData.title,
     cData.description,
     Date.now(),
@@ -24,7 +27,7 @@ export const selectAllCourses = async (limit="10") => {
 }
 
 export const selectCourse = async (cId) => {
-  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture FROM courses INNER JOIN users ON courses.author_id = users.id WHERE courses.id = $1";
+  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture, users.phone_number AS author_phone_number, users.phone_number_associated_name AS author_number_associated_name FROM courses INNER JOIN users ON courses.author_id = users.id WHERE courses.id = $1";
   const result = await pool.query(query, [cId]);
   return result.rows[0];
 }

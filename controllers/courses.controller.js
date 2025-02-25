@@ -3,7 +3,7 @@ import { uploadPhoto, uploadVideo } from "../utils/uploader.js";
 import { io } from "../server.js";
 
 export const createCourse = async (req, res) => {
-  const { category, title, description } = req.body;
+  const { category, price, title, description } = req.body;
   try {
     if (!req.user) {
       return res.status(403).json({ message: "forbidden" });
@@ -16,14 +16,18 @@ export const createCourse = async (req, res) => {
     console.log("uploading cover photo to cloudinary...");
     const uploadResult = await uploadPhoto(`./tmp/upload/${req.file.filename}`, "APX_" + Date.now());
     const coverPhoto = uploadResult.url;
-
+    console.log(price)
     const course = await addCourse({
       author_id: id,
       cover_photo: coverPhoto,
       category,
+      price,
       title, 
       description,
     });
+    if (!course) {
+      res.status(400).json({ message: "Bad Request" });
+    }
     res.status(200).json(course);
     console.log("Course added with success");
     console.log(course);

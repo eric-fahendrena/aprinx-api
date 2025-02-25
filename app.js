@@ -6,6 +6,8 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import coursesRoutes from "./routes/courses.routes.js";
+import userCourseAccessRoutes from "./routes/userCourseAccess.routes.js";
+import courseTransactionsRoutes from "./routes/courseTransactions.routes.js";
 
 dotenv.config();
 
@@ -35,5 +37,7 @@ app.use(session({
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/courses", coursesRoutes);
+app.use("/api/user-course-access", userCourseAccessRoutes);
+app.use("/api/course-transactions", courseTransactionsRoutes);
 
 export default app;

@@ -8,7 +8,7 @@ const { Pool } = pg;
 const GOOGLE_CALLBACK_URL = "http://localhost:8000/api/auth/google/callback";
 const GOOGLE_OAUTH_SCOPES = [
   "https%3A//www.googleapis.com/auth/userinfo.email",
-  "https%3A//www.googleapis.com/auth/userinfo.profile",  
+  "https%3A//www.googleapis.com/auth/userinfo.profile",
 ];
 
 /**
@@ -20,6 +20,7 @@ const GOOGLE_OAUTH_SCOPES = [
  * @param {Response} res 
  */
 export const loginWithGoogle = async (req, res) => {
+  console.log("Login with google");
   const redirectToConsentScreen = () => {
     const state = "some_state";
     const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
@@ -71,7 +72,10 @@ export const handleGoogleResponse = async (req, res) => {
     secure: true,
     maxAge: 3600000,
   });
-  res.redirect(process.env.CLIENT_ORIGIN);
+  if (!savedUser.phone_number) {
+    return res.redirect(301, `${process.env.CLIENT_ORIGIN}/profile/edit/phone`);
+  }
+  res.redirect(301, process.env.CLIENT_ORIGIN);
 };
 
 /**

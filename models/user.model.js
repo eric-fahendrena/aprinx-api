@@ -54,3 +54,15 @@ export const findById = async (uId) => {
   const result = await pool.query(query, [uId]);
   return result.rows[0];
 }
+/**
+ * update phone number
+ *  
+ * @param {Number} uId 
+ * @returns 
+ */
+export const updateUserPhoneNumber = async (uId, data) => {
+  console.log(data)
+  const query = "UPDATE users SET phone_number = $1, phone_number_associated_name = $2 WHERE id = $3 RETURNING *";
+  const result = await pool.query(query, [data.phone_number, data.phone_number_associated_name, uId]);
+  return result.rows[0];
+}
