@@ -1,11 +1,7 @@
 import fetch from "node-fetch";
-import pg from "pg";
 import * as userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
-const { Pool } = pg;
-
-const GOOGLE_CALLBACK_URL = "http://localhost:8000/api/auth/google/callback";
 const GOOGLE_OAUTH_SCOPES = [
   "https%3A//www.googleapis.com/auth/userinfo.email",
   "https%3A//www.googleapis.com/auth/userinfo.profile",
@@ -22,9 +18,11 @@ const GOOGLE_OAUTH_SCOPES = [
 export const loginWithGoogle = async (req, res) => {
   console.log("Login with google");
   const redirectToConsentScreen = () => {
+    console.log("Consent screen !");
     const state = "some_state";
     const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
-    const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${process.env.GOOGLE_OAUTH_URL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_CALLBACK_URL)}&access_type=offline&response_type=code&state=${state}&scope=${scopes}`;
+    const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${process.env.GOOGLE_OAUTH_URL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.GOOGLE_CALLBACK_URL)}&access_type=offline&response_type=code&state=${state}&scope=${scopes}`;
+    console.log("Redirection to ", GOOGLE_OAUTH_CONSENT_SCREEN_URL);
     res.redirect(GOOGLE_OAUTH_CONSENT_SCREEN_URL);
   };
   redirectToConsentScreen();
@@ -42,7 +40,7 @@ export const handleGoogleResponse = async (req, res) => {
     code,
     client_id: process.env.GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
-    redirect_uri: GOOGLE_CALLBACK_URL,
+    redirect_uri: process.env.GOOGLE_CALLBACK_URL,
     grant_type: "authorization_code",
   };
   /**
@@ -67,14 +65,17 @@ export const handleGoogleResponse = async (req, res) => {
   console.log(jwtToken);
   console.log("Saving to cookies...");
   res.cookie("jwt_token", jwtToken, {
-    sameSite: "Strict",
+    sameSite: "none",
     httpOnly: true,
     secure: true,
     maxAge: 3600000,
   });
+  console.log(res.cookies);
   if (!savedUser.phone_number) {
     return res.redirect(301, `${process.env.CLIENT_ORIGIN}/profile/edit/phone`);
   }
+  console.log("Saved User");
+  console.log(savedUser);
   res.redirect(301, process.env.CLIENT_ORIGIN);
 };
 
@@ -85,9 +86,14 @@ export const handleGoogleResponse = async (req, res) => {
  * @param {Response} res 
  */
 export const sendJwtToken = (req, res) => {
-  console.log("sending jwt token...");
-  res.status(200).json({ jwt_token: req.cookies.jwt_token });
-  console.log("jwt token received !");
+  try {
+    console.log("sending jwt token...");
+    console.log(req.cookies.jwt_token);
+    res.status(200).json({ jwt_token: req.cookies.jwt_token });
+    console.log("jwt token received !");
+  } catch (error) {
+    console.error("Error", error);
+  }
 }
 
 /**

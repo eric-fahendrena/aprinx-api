@@ -1,6 +1,5 @@
 import { addCourse, addVideo, selectAllCourses, selectCourse, selectRandCourse, selectVideo, selectVideos } from "../models/course.model.js";
 import { uploadPhoto, uploadVideo } from "../utils/uploader.js";
-import { io } from "../server.js";
 
 export const createCourse = async (req, res) => {
   const { category, price, title, description } = req.body;
@@ -29,8 +28,6 @@ export const createCourse = async (req, res) => {
       res.status(400).json({ message: "Bad Request" });
     }
     res.status(200).json(course);
-    console.log("Course added with success");
-    console.log(course);
   } catch (error) {
     console.error("Error", error);
   }
@@ -72,7 +69,7 @@ export const getRandCourse = async (req, res) => {
 
 export const createVideo = async (req, res) => {
   const { cId } = req.params;
-  const { title, description, access } = req.body;
+  const { title, description, access, url, thumbnail } = req.body;
   try {
     if (!req.user)
       return res.status(401).json({ message: "access unauthorized" });
@@ -82,15 +79,6 @@ export const createVideo = async (req, res) => {
     if (course.author_id !== req.user.id)
       return res.status(403).json({ message: "access forbidden" });
     
-    console.log("Uploading course video...");
-    const vidUploadResult = await uploadVideo(`./tmp/upload/${req.files.video_file[0].filename}`, "VID_" + Date.now());
-    const url = vidUploadResult.url;
-    console.log("Course video uploaded with success !");
-    
-    console.log("Uploading course video thumbnail...");
-    const thumbUploadResult = await uploadPhoto(`./tmp/upload/${req.files.thumbnail_file[0].filename}`, "IMG_" + Date.now());                               
-    const thumbnail = thumbUploadResult.url;
-    console.log("Course video thumbnail uploaded with success !");
     const vData = {
       course_id: cId,
       author_id: req.user.id,

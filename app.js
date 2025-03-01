@@ -8,6 +8,7 @@ import usersRoutes from "./routes/users.routes.js";
 import coursesRoutes from "./routes/courses.routes.js";
 import userCourseAccessRoutes from "./routes/userCourseAccess.routes.js";
 import courseTransactionsRoutes from "./routes/courseTransactions.routes.js";
+import uploadsRoutes from "./routes/uploads.routes.js";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+app.use("/api/upload", uploadsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/courses", coursesRoutes);

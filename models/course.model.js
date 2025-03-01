@@ -22,7 +22,6 @@ export const addCourse = async (cData) => {
 export const selectAllCourses = async (limit="10") => {
   const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture FROM courses INNER JOIN users ON courses.author_id = users.id LIMIT $1";
   const result = await pool.query(query, [limit]);
-  console.log(result.rows);
   return result.rows;
 }
 
@@ -32,8 +31,7 @@ export const selectCourse = async (cId) => {
   return result.rows[0];
 }
 
-export const selectRandCourse = async (excludedIds) => {
-  const excludedIdsStr = excludedIds.length ? excludedIds.join(",") : "NULL";
+export const selectRandCourse = async () => {
   const query = `SELECT courses.*, users.name AS author_name, users.picture AS author_picture FROM courses INNER JOIN users ON courses.author_id = users.id ORDER BY RANDOM() LIMIT 1`;
   const { rows } = await pool.query(query);
   return rows[0];

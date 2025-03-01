@@ -4,13 +4,14 @@ import multer from "multer";
 import path from "path";
 
 const storage = multer.diskStorage({
-  destination: "./tmp/upload",
+  destination: "/tmp/upload",
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
+const limits = { fileSize: 500 * 1024 * 1025 };
 
-export const upload = multer({ storage });
+export const upload = multer({ storage, limits });
 
 cloudinary.config({
   cloud_name: "dbmbskzzr",
