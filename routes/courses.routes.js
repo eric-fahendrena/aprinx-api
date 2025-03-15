@@ -1,21 +1,20 @@
 import express from "express";
-import { createCourse, createVideo, getCourse, getCourses, getRandCourse, getVideo, getVideos, isLiked, reactCourse } from "../controllers/courses.controller.js";
+import { createCourse, createVideo, getCourse, getCourses, getRandCourse, getVideo, getVideos, removeCourse } from "../controllers/courses.controller.js";
 import { authenticateToken } from "../middlewares/auth.middleware.js";
 import { upload } from "../utils/uploader.js";
+import { createCourseComment, getCourseComments } from "../controllers/courseComments.controller.js";
 
 const router = express.Router();
 
-router.post("/add", authenticateToken, upload.single("cover_photo_file"), createCourse);
+router.post("/add", authenticateToken, createCourse);
+router.post("/:cId/comments/add", authenticateToken, createCourseComment);
+router.post("/:cId/videos/add", authenticateToken, createVideo);
 router.get("/", getCourses);
 router.get("/random", getRandCourse);
 router.get("/:cId", getCourse);
-router.post("/:cId/react", authenticateToken, reactCourse);
-router.get("/:cId/is-liked", authenticateToken, isLiked);
-router.post("/:cId/videos/add", authenticateToken, upload.fields([
-  {name: "video_file"},
-  {name: "thumbnail_file"},
-]), createVideo);
 router.get("/:cId/videos", getVideos);
-router.get("/:cId/videos/:vId", getVideo);
+router.get("/:cId/videos/:vId", authenticateToken, getVideo);
+router.get("/:cId/comments", getCourseComments);
+router.delete("/:cId/delete", authenticateToken, removeCourse);
 
 export default router;

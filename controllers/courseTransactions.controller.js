@@ -1,4 +1,4 @@
-import { insertTransaction, selectTransaction } from "../models/courseTransaction.model.js";
+import { insertTransaction, selectTransaction, updateTransactionStatus } from "../models/courseTransaction.model.js";
 
 export const addTransaction = async (req, res) => {
   const { course_id, trans_id, trans_exp_name, status } = req.body;
@@ -30,11 +30,23 @@ export const verifyTransaction = async (req, res) => {
       trans_id,
     });
     console.log(trans);
-    if (!trans)
-      return res.status(404).json({ message: `transaction with course creator id : ${req.user.id} and trans.ID : ${trans_id} not found` });
     res.status(200).json(trans);
   } catch (error) {
     console.error("Error", error);
-    res.status(200).send("Internal Server Error");
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export const confirmTransaction = async (req, res) => {
+  const { trans_id } = req.query;
+  try {
+    if (!req.user)
+      return res.status(401).json({ message: "unauthorized" });
+    const confirmedTrans = await updateTransactionStatus(trans_id, "confirmed");
+    console.log("Transaction", confirmedTrans.trans_id, "has been confirmed !");
+    res.status(200).json(confirmedTrans);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).send("Internal Server Error");
   }
 }

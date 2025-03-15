@@ -9,6 +9,10 @@ import coursesRoutes from "./routes/courses.routes.js";
 import userCourseAccessRoutes from "./routes/userCourseAccess.routes.js";
 import courseTransactionsRoutes from "./routes/courseTransactions.routes.js";
 import uploadsRoutes from "./routes/uploads.routes.js";
+import notificationsRoutes from "./routes/notifications.routes.js";
+import commentNotificationsRoutes from "./routes/commentNotifications.routes.js";
+import courseLikesRoutes from "./routes/courseLikes.routes.js";
+import deletedCoursesRoutes from "./routes/deletedCourses.routes.js";
 
 dotenv.config();
 
@@ -39,7 +43,11 @@ app.use("/api/upload", uploadsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/courses", coursesRoutes);
+app.use("/api/course-likes", courseLikesRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/api/comment-notifications", commentNotificationsRoutes);
 app.use("/api/user-course-access", userCourseAccessRoutes);
 app.use("/api/course-transactions", courseTransactionsRoutes);
+app.use("/api/deleted-courses", deletedCoursesRoutes);
 
 export default app;

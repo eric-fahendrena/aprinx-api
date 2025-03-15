@@ -1,13 +1,12 @@
 import app from "./app.js";
 import http from "http";
-import { Server } from "socket.io";
+import { initSocket } from "./socket.io.js";
 
 const server = http.createServer(app);
-
-export const io = new Server(server);
+initSocket(server);
 
 export const start = (port) => {
-  app.listen(port, "0.0.0.0", () => {
+  server.listen(port, "0.0.0.0", () => {
     console.log("Server running on port", port);
   });
 };

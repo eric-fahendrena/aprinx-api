@@ -21,3 +21,9 @@ export const selectTransaction = async (tData) => {
   ]);
   return result.rows[0];
 }
+
+export const updateTransactionStatus = async (transId, status) => {
+  const query = "UPDATE course_transactions SET status = $1 WHERE trans_id = $2 RETURNING *";
+  const result = await pool.query(query, [ status, transId ]);
+  return result.rows[0];
+}

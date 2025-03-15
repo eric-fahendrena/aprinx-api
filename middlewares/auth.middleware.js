@@ -4,7 +4,7 @@ export const authenticateToken = (req, res, next) => {
   try {
     const token = req.header("Authorization");
     if (!token) {
-      return res.status(401).json({ message: "access forbidden, missing token"})
+      return res.status(401).json({ message: "access unauthorized, missing token"})
     }
     const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
     if (decoded.id === undefined)

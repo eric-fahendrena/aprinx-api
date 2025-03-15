@@ -62,22 +62,28 @@ export const handleGoogleResponse = async (req, res) => {
   const userTokenInfo = await tokenInfoResponse.json();
   const savedUser = await saveUser(userTokenInfo);
   const jwtToken = generateToken({ id: savedUser.id });
-  console.log(jwtToken);
-  console.log("Saving to cookies...");
+  console.log("Saving to cookies");
   res.cookie("jwt_token", jwtToken, {
     sameSite: "none",
     httpOnly: true,
     secure: true,
     maxAge: 3600000,
   });
-  console.log(res.cookies);
-  if (!savedUser.phone_number) {
-    return res.redirect(301, `${process.env.CLIENT_ORIGIN}/profile/edit/phone`);
-  }
-  console.log("Saved User");
-  console.log(savedUser);
-  res.redirect(301, process.env.CLIENT_ORIGIN);
+  console.log("Waiting for redirection");
+  setTimeout(() => {
+    if (!savedUser.phone_number) {
+      return res.redirect(301, `${process.env.CLIENT_ORIGIN}/profile/edit/phone`);
+    }
+    res.redirect(301, process.env.CLIENT_ORIGIN);
+  }, 3000);
 };
+
+export const logout = (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie('jwt_token');
+    res.json({ message: "Logout success" });
+  });
+}
 
 /**
  * send jwt_token
@@ -87,8 +93,7 @@ export const handleGoogleResponse = async (req, res) => {
  */
 export const sendJwtToken = (req, res) => {
   try {
-    console.log("sending jwt token...");
-    console.log(req.cookies.jwt_token);
+    console.log("sending jwt token");
     res.status(200).json({ jwt_token: req.cookies.jwt_token });
     console.log("jwt token received !");
   } catch (error) {
@@ -121,8 +126,7 @@ async function saveUser(userData) {
  */
 function generateToken(data) {
   const JWT_SECRET = process.env.JWT_SECRET;
-  console.log("Generate token...");
-  console.log("JWT_SECRET", JWT_SECRET);
-  const token = jwt.sign(data, JWT_SECRET, { expiresIn: 60 * 60 });
+  console.log("Generate token");
+  const token = jwt.sign(data, JWT_SECRET, { expiresIn: 24 * 60 * 60 });
   return token;
 }

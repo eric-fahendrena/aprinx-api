@@ -1,31 +1,26 @@
-import { addCourse, addVideo, deleteCourseLike, insertCourseLike, selectAllCourses, selectCourse, selectCourseLike, selectRandCourse, selectVideo, selectVideos } from "../models/course.model.js";
-import { uploadPhoto, uploadVideo } from "../utils/uploader.js";
+import { addCourse, addVideo,  deleteCourse,  selectAllCourses, selectCourse, selectRandCourse, selectVideo, selectVideos } from "../models/course.model.js";
+import { selectAccess } from "../models/userCourseAccess.model.js";
+import { uploadPhoto } from "../utils/uploader.js";
 
 export const createCourse = async (req, res) => {
-  const { category, price, title, description } = req.body;
+  const { category, price, title, description, coverPhotoUrl } = req.body;
+  console.log(req.body)
   try {
     if (!req.user) {
       return res.status(403).json({ message: "forbidden" });
     }
-    if (!req.file) {
-      return res.status(400).json({ message: "no cover photo found" });
-    }
 
     const { id } = req.user;
-    console.log("uploading cover photo to cloudinary...");
-    const uploadResult = await uploadPhoto(`./tmp/upload/${req.file.filename}`, "APX_" + Date.now());
-    const coverPhoto = uploadResult.url;
-    console.log(price)
     const course = await addCourse({
       author_id: id,
-      cover_photo: coverPhoto,
+      cover_photo: coverPhotoUrl,
       category,
       price,
       title, 
       description,
     });
     if (!course) {
-      res.status(400).json({ message: "Bad Request" });
+      return res.status(400).json({ message: "Bad Request" });
     }
     res.status(200).json(course);
   } catch (error) {
@@ -33,9 +28,26 @@ export const createCourse = async (req, res) => {
   }
 }
 
-export const getCourses = async (req, res) => {
+export const removeCourse = async (req, res) => {
+  const { cId } = req.params;
   try {
-    const courses = await selectAllCourses();
+    if (!req.user)
+      return res.status(401).json({ message: "unauthorized" });
+    const deletedCourse = await deleteCourse(cId);
+    res.json(deletedCourse)
+  } catch (error) {
+    console.log("Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export const getCourses = async (req, res) => {
+  const { limit, offset } = req.query;
+  try {
+    console.log("Getting all courses...");
+    console.log("limit", limit, ", offset", offset);
+    const courses = await selectAllCourses(offset, limit);
+    console.log("Loaded courses", courses.length);
     res.status(200).json(courses);
   } catch (error) {
     console.error("Error", error);
@@ -58,8 +70,6 @@ export const getRandCourse = async (req, res) => {
   req.session.displayedCourses = req.session.displayedCourses || [];
   try {
     const course = await selectRandCourse(req.session.displayedCourses);
-    console.log("Random Course");
-    console.log(course);
     res.status(200).json(course);
   } catch (error) {
     console.error("Error", error);
@@ -70,6 +80,7 @@ export const getRandCourse = async (req, res) => {
 export const createVideo = async (req, res) => {
   const { cId } = req.params;
   const { title, description, access, url, thumbnail } = req.body;
+  console.log(req.body)
   try {
     if (!req.user)
       return res.status(401).json({ message: "access unauthorized" });
@@ -90,6 +101,7 @@ export const createVideo = async (req, res) => {
     };
     // sending video data
     console.log("Sending course video data...");
+    console.log(vData);
     const addingVideoResult = await addVideo(vData);
     res.json(addingVideoResult);
   } catch (error) {
@@ -102,6 +114,7 @@ export const getVideos = async (req, res) => {
   const { cId } = req.params;
   try {
     const cVideos = await selectVideos(cId);
+    console.log(cVideos)
     if (!cVideos) 
       return res.status(404).json({ message: "course not found" });
     res.status(200).json(cVideos);
@@ -117,38 +130,16 @@ export const getVideo = async (req, res) => {
     const cVideo = await selectVideo(cId, vId);
     if (!cVideo)
       return res.status(404).json({ message: "video not found" });
-    res.status(200).json(cVideo);
-  } catch (error) {
-    console.error("Error", error);
-    res.status(500).send("Internal Server Error");
-  }
-}
-
-export const reactCourse = async (req, res) => {
-  const { cId } = req.params;
-  try {
-    if (!req.user) 
-      return res.status(401).json({ message: "access unauthorized" });
-    const deletedLike = await deleteCourseLike({ course_id: cId, user_id: req.user.id });
-    if (deletedLike)
-      return res.status(200).json({ liked: false });
-    const like = await insertCourseLike({ course_id: cId, user_id: req.user.id });
-    res.status(200).json({ liked: true });
-  } catch (error) {
-    console.error("Error", error);
-    res.status(500).send("Internal Server Error");
-  }
-}
-
-export const isLiked = async (req, res) => {
-  const { cId } = req.params;
-  try {
+    if (cVideo.access === "free")
+      return res.status(200).json(cVideo);
+    // if video is not free
     if (!req.user)
-      return res.status(401).json({ message: "Unauthorized" });
-    const like = await selectCourseLike({ course_id: cId, user_id: req.user.id });
-    if (!like)
-      return res.json({ value: false });
-    res.json({ value: true });
+      return res.status(401).json({ message: "unauthorized" });
+    const courseAccess = await selectAccess(cId, req.user.id);
+    console.log(courseAccess);
+    if (!courseAccess && cVideo.author_id !== req.user.id)
+      return res.status(403).json({ message: "forbidden" });
+    res.status(200).json(cVideo);
   } catch (error) {
     console.error("Error", error);
     res.status(500).send("Internal Server Error");
