@@ -26,3 +26,30 @@ export const changePhoneNumber = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 }
+
+export const getAllUsers = async (req, res) => {
+  const { offset, limit } = req.query;
+  console.log(offset);
+  try {
+    const users = await userModel.selectAllUsers(offset, limit);
+    res.json(users);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export const convertUserToTeacher = async (req, res) => {
+  const { uId } = req.params;
+  try {
+    if (!req.user) 
+      return res.status(401).json({ message: "unauthorized" });
+    console.log("Role", req.user.role)
+    console.log("User id", uId);
+    const convertedUser = await userModel.updateUserRoleToTeacher(uId);
+    res.json(convertedUser);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+}

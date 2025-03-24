@@ -26,9 +26,21 @@ export const deleteCourse = async (courseId) => {
 }
 
 export const selectAllCourses = async (offset, limit) => {
-  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture FROM courses INNER JOIN users ON courses.author_id = users.id ORDER BY courses.date DESC OFFSET $1 LIMIT $2";
+  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture, teacher_subscriptions.date AS author_subscription_date FROM courses INNER JOIN users ON courses.author_id = users.id INNER JOIN teacher_subscriptions ON courses.author_id = teacher_subscriptions.user_id ORDER BY courses.date DESC OFFSET $1 LIMIT $2";
   const result = await pool.query(query, [ offset, limit ]);
   return result.rows;
+}
+
+export const selectCoursesByKeyword = async (keyword, offset, limit) => {
+  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture FROM courses INNER JOIN users ON courses.author_id = users.id WHERE courses.title ILIKE $1 OR courses.description ILIKE $1 OR courses.category ILIKE $1 ORDER BY courses.date DESC OFFSET $2 LIMIT $3";
+  const result = await pool.query(query, [ `%${keyword}%`, offset, limit ]);
+  return result.rows;
+}
+
+export const selectCoursePrice = async (courseId) => {
+  const query = "SELECT price FROM courses WHERE id = $1";
+  const result = await pool.query(query, [ courseId ]);
+  return result.rows[0].price;
 }
 
 export const selectCourse = async (cId) => {

@@ -1,5 +1,12 @@
 import { selectUnseenCommentNotifications, updateCommentNotificationsIsSeen } from "../models/commentNotification.model.js";
 
+/**
+ * Gets unseen notifications
+ * 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
+ * @returns 
+ */
 export const getUnseenNotifications = async (req, res) => {
   try {
     if (!req.user)
@@ -12,6 +19,13 @@ export const getUnseenNotifications = async (req, res) => {
   }
 }
 
+/**
+ * Sees all notifications
+ * 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
+ * @returns 
+ */
 export const seeAllNotifications = async (req, res) => {
   try {
     if (!req.user)

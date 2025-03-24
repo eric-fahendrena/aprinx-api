@@ -66,3 +66,15 @@ export const updateUserPhoneNumber = async (uId, data) => {
   const result = await pool.query(query, [data.phone_number, data.phone_number_associated_name, uId]);
   return result.rows[0];
 }
+
+export const selectAllUsers = async (offset, limit) => {
+  const query = "SELECT * FROM users ORDER BY name OFFSET $1 LIMIT $2";
+  const result = await pool.query(query, [ offset, limit ]);
+  return result.rows;
+}
+
+export const updateUserRoleToTeacher = async (userId) => {
+  const query = "UPDATE users SET role = 'TEACHER' WHERE id = $1 RETURNING *";
+  const result = await pool.query(query, [ userId ]);
+  return result.rows[0];
+}

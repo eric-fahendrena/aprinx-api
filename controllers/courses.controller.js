@@ -1,16 +1,23 @@
-import { addCourse, addVideo,  deleteCourse,  selectAllCourses, selectCourse, selectRandCourse, selectVideo, selectVideos } from "../models/course.model.js";
+import { addCourse, addVideo,  deleteCourse,  selectAllCourses, selectCourse, selectCoursesByKeyword, selectRandCourse, selectVideo, selectVideos } from "../models/course.model.js";
 import { selectAccess } from "../models/userCourseAccess.model.js";
-import { uploadPhoto } from "../utils/uploader.js";
 
+/**
+ * Creates course
+ * 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
+ * @returns 
+ */
 export const createCourse = async (req, res) => {
   const { category, price, title, description, coverPhotoUrl } = req.body;
-  console.log(req.body)
   try {
     if (!req.user) {
       return res.status(403).json({ message: "forbidden" });
     }
 
     const { id } = req.user;
+    
+    console.log("Adding course data")
     const course = await addCourse({
       author_id: id,
       cover_photo: coverPhotoUrl,
@@ -19,6 +26,8 @@ export const createCourse = async (req, res) => {
       title, 
       description,
     });
+
+    console.log("Sending response");
     if (!course) {
       return res.status(400).json({ message: "Bad Request" });
     }
@@ -51,6 +60,18 @@ export const getCourses = async (req, res) => {
     res.status(200).json(courses);
   } catch (error) {
     console.error("Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export const getCoursesByKeyword = async (req, res) => {
+  const { keyword, offset, limit } = req.query;
+  console.log("offset", offset, "limit", limit);
+  try {
+    const courses = await selectCoursesByKeyword(keyword, offset, limit)
+    res.json(courses);
+  } catch (error) {
+    console.log("Error", error);
     res.status(500).send("Internal Server Error");
   }
 }

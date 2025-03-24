@@ -10,10 +10,10 @@ const GOOGLE_OAUTH_SCOPES = [
 /**
  * login with google
  * 
- * Redirect user to consent screen
+ * Redirects user to consent screen
  * 
- * @param {Request} req 
- * @param {Response} res 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
  */
 export const loginWithGoogle = async (req, res) => {
   console.log("Login with google");
@@ -29,10 +29,10 @@ export const loginWithGoogle = async (req, res) => {
 };
 
 /**
- * handle google response
+ * handles google response
  * 
- * @param {Request} req 
- * @param {Response} res 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
  */
 export const handleGoogleResponse = async (req, res) => {
   const { code } = req.query;
@@ -61,7 +61,7 @@ export const handleGoogleResponse = async (req, res) => {
   const tokenInfoResponse = await fetch(`${process.env.GOOGLE_TOKEN_INFO_URL}?id_token=${id_token}`);
   const userTokenInfo = await tokenInfoResponse.json();
   const savedUser = await saveUser(userTokenInfo);
-  const jwtToken = generateToken({ id: savedUser.id });
+  const jwtToken = generateToken({ id: savedUser.id, role: savedUser.role });
   console.log("Saving to cookies");
   res.cookie("jwt_token", jwtToken, {
     sameSite: "none",
@@ -86,7 +86,7 @@ export const logout = (req, res) => {
 }
 
 /**
- * send jwt_token
+ * sends jwt_token
  * 
  * @param {Request} req 
  * @param {Response} res 
@@ -102,7 +102,7 @@ export const sendJwtToken = (req, res) => {
 }
 
 /**
- * save user
+ * saves user
  * 
  * @param {object} userData 
  * @returns {object} newUser
@@ -119,7 +119,7 @@ async function saveUser(userData) {
 }
 
 /**
- * generate token
+ * generates token
  * 
  * @param {object} data 
  * @returns {string}

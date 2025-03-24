@@ -1,55 +1,49 @@
-import { insertCommentNotification, selectCommentNotificationByCourseId, updateCommentNotificationAuthorNames } from "../models/commentNotification.model.js";
-import { insertCourseAccessNotification, selectCourseAccessNotification } from "../models/courseAccessNotification.model.js";
-import { insertLikeNotification, selectLikeNotificationByCourseId, updateLikeNotificationAuthorNames } from "../models/likeNotification.model.js";
+import { insertNotification, selectNotificationByCourseId, updateNotificationAuthorNames } from "../models/notification.model.js";
 
+/**
+ * Handles notification events
+ * 
+ * @param {*} io 
+ * @param {*} socket 
+ */
 export const handleNotification = (io, socket) => {
-  socket.on("sendCommentNotification", async (data) => {
-    const { userId, courseId, authorNames } = data;
-    
-    console.log("Send notification to", userId);
-    let notification = await selectCommentNotificationByCourseId(courseId);
+  /**
+   * Sends notification
+   */
+  socket.on("sendNotification", async (data) => {
+    const { userId, courseId, authorNames, type } = data;
+    let notification;
+
+    console.log(`SENDING ${type} NOTIFICATION`);
+
+    console.log("Checking if same notification already exists...");
+    notification = await selectNotificationByCourseId(courseId, type);
     if (!notification) {
-      notification = await insertCommentNotification({ userId, courseId, authorNames });
+      console.log("Same notification doesn't still exist !");
+      console.log("Creating a notification...");
+      notification = await insertNotification({ userId, courseId, authorNames, type });
+      console.log(notification ? "Notification successfully created !" : "(!) Failed to create notification !");
     } else {
-      console.log("Notification already exists ! Just update it.");
-      notification = await updateCommentNotificationAuthorNames(notification.id, authorNames);
-    }
-    
-    console.log("Emitting receiveNotification event");
-    io.to(userId).emit("receiveNotification", notification);
-  });
-
-  socket.on("sendLikeNotification", async (data) => {
-    const { userId, courseId, authorNames } = data;
-
-    console.log("Send like notification to", userId);
-    let notification = await selectLikeNotificationByCourseId(courseId);
-    if (!notification) {
-      notification = await insertLikeNotification({ userId, courseId, authorNames });
-    } else {
-      console.log("Like notification already exists ! Just update it.");
-      notification = await updateLikeNotificationAuthorNames(notification.id, authorNames);
-    }
-
-    console.log("Emitting receiveNotification event");
-    io.to(userId).emit("receiveNotification", notification);
-  });
-
-  socket.on("sendCourseAccessNotification", async (data) => {
-    const { userId, courseId, authorNames } = data;
-    let notification = await selectCourseAccessNotification(courseId, userId);
-    if (!notification) {
-      notification = await insertCourseAccessNotification({ userId, courseId, authorNames });
-    } else {
-      console.log("Course access notification already exists ! Just update id.");
+      console.log("Same notification already exists !");
+      console.log("Updating the notification...");
+      const updatedNotification = await updateNotificationAuthorNames(notification.id, authorNames);
+      if (!updatedNotification) {
+        console.log("(!) Failed to update notification !");
+      } else {
+        notification = updatedNotification;
+        console.log("Notification successfully updated !");
+      }
     }
 
-    console.log("Emitting receiveNotification event");
+    console.log("Emitting receiveNotification event.");
     io.to(userId).emit("receiveNotification", notification);
-  });
-  
+  })
+
+  /**
+   * Joins user room
+   */
   socket.on("joinUserRoom", (userId) => {
     console.log(userId, "joined the room");
     socket.join(userId);
-  });
+  });  
 }
