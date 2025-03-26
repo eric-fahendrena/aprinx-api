@@ -7,8 +7,6 @@ import pool from "../db/pool.js";
  */
 export const addUser = async (data) => {
   try {
-    if (!data.name || !data.email || !data.picture || !data.given_name || !data.family_name || !data.email_verified)
-      throw new Error("Invalid credential");
     const query = "INSERT INTO users(name, given_name, family_name, email, email_verified, picture) VALUES($1, $2, $3, $4, $5, $6) RETURNING *";
     const result = await pool.query(query, [
       data.name,
