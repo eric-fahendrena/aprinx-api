@@ -54,7 +54,7 @@ export const insertNotification = async (notifData) => {
  * @returns {object|undefined} the updated notification
  */
 export const updateNotificationAuthorNames = async (notifId, authorNames) => {
-  const query = "UPDATE notifications SET author_names = $1, last_update = $2, is_seen = false WHERE id = $3 RETURNING *";
+  const query = "UPDATE notifications SET author_names = $1, last_update = $2, is_seen = false, is_read = false WHERE id = $3 RETURNING *";
   const result = await pool.query(query, [ authorNames, Date.now(), notifId ]);
   return result.rows[0];
 }
