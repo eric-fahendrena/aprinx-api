@@ -14,6 +14,7 @@ import commentNotificationsRoutes from "./routes/commentNotifications.routes.js"
 import courseLikesRoutes from "./routes/courseLikes.routes.js";
 import deletedCoursesRoutes from "./routes/deletedCourses.routes.js";
 import teacherSubscription from "./routes/teacherSubscription.routes.js";
+import subscriptionTransactionsRoutes from "./routes/subscriptionTransactions.routes.js";
 
 dotenv.config();
 
@@ -51,5 +52,6 @@ app.use("/api/user-course-access", userCourseAccessRoutes);
 app.use("/api/course-transactions", courseTransactionsRoutes);
 app.use("/api/deleted-courses", deletedCoursesRoutes);
 app.use("/api/teacher-subscriptions", teacherSubscription);
+app.use("/api/subscription-transactions", subscriptionTransactionsRoutes);
 
 export default app;
