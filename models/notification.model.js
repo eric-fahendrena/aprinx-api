@@ -14,6 +14,20 @@ export const selectNotificationByCourseId = async (courseId, type) => {
 }
 
 /**
+ * Selects all notifications by user id
+ * 
+ * @param {number} uId 
+ * @param {number|string} offset 
+ * @param {number|string} limit 
+ * @returns {Array<object>} a list of notifications
+ */
+export const selectAllNotificationsByUserId = async (uId, offset, limit) => {
+  const query = "SELECT * FROM notifications WHERE user_id = $1 ORDER BY last_update DESC OFFSET $2 LIMIT $3";
+  const result = await pool.query(query, [ uId, offset, limit ]);
+  return result.rows;
+}
+
+/**
  * Inserts notification to the table
  * 
  * @param {object} notifData 
@@ -45,19 +59,37 @@ export const updateNotificationAuthorNames = async (notifId, authorNames) => {
   return result.rows[0];
 }
 
-export const selectNotificationsByUserId = async (uId, limit, offset) => {
-  const query = "SELECT * FROM notifications WHERE user_id = $1 ORDER BY last_update";
-  const result = await pool.query(query, [ uId ]);
-  return result.rows;
-}
-
+/**
+ * Selects unseen notifications count
+ * 
+ * @param {number} uId 
+ * @returns {number} the total of unseen notifications
+ */
 export const selectUnseenNotificationsCount = async (uId) => {
   const query = "SELECT COUNT(*) AS total FROM notifications WHERE user_id = $1 AND is_seen = $2";
   const result = await pool.query(query, [ uId, false ]);
   return result.rows[0].total;
 }
 
+/**
+ * Updates the is_seen column to true
+ * 
+ * @param {number} uId 
+ * @returns {true}
+ */
 export const updateNotificationsIsSeenToTrue = async (uId) => {
   await pool.query("UPDATE notifications SET is_seen = true WHERE user_id = $1", [ uId ]);
   return true;
+}
+
+/**
+ * Updates notification is_read to true
+ * 
+ * @param {number} notifId 
+ * @returns 
+ */
+export const updateNotificationIsReadToTrue = async (uId, notifId) => {
+  const query = "UPDATE notifications SET is_read = true WHERE user_id = $1 AND id = $2 RETURNING *";
+  const result = await pool.query(query, [ uId, notifId ]);
+  return result.rows[0];
 }
