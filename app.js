@@ -22,6 +22,7 @@ const app = express();
 const allowedOrigins = [
   process.env.CLIENT_ORIGIN,
   "http://localhost:5173",
+  "http://192.168.43.213:5173",
 ];
 
 app.use(cors({
