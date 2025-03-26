@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { findById } from "../models/user.model.js";
 
 export const authenticateToken = (req, res, next) => {
   try {
@@ -26,5 +27,15 @@ export const verifyAdmin = (req, res, next) => {
 export const verifyTeacher = (req, res, next) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "TEACHER")
     return res.status(403).json({ message: "only admin or teacher can do this action" });
+  next();
+}
+
+export const verifyPhoneNumber = async (req, res, next) => {
+  console.log("Verifying if user has phone number...");
+  const user = await findById(req.user.id);
+  if (user.phone_number || user.phone_number_associated_name) {
+    console.log("User doesn't have phone number");
+    return res.status(403).json({ message: "phone number is required" });
+  }
   next();
 }

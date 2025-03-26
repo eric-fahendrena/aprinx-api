@@ -71,9 +71,6 @@ export const handleGoogleResponse = async (req, res) => {
   });
   console.log("Waiting for redirection");
   setTimeout(() => {
-    if (!savedUser.phone_number) {
-      return res.redirect(301, `${process.env.CLIENT_ORIGIN}/profile/edit/phone`);
-    }
     res.redirect(301, process.env.CLIENT_ORIGIN);
   }, 3000);
 };

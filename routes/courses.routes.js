@@ -1,13 +1,13 @@
 import express from "express";
 import { createCourse, createVideo, getCourse, getCourses, getCoursesByKeyword, getRandCourse, getVideo, getVideos, removeCourse } from "../controllers/courses.controller.js";
-import { authenticateToken, verifyTeacher } from "../middlewares/auth.middleware.js";
+import { authenticateToken, verifyPhoneNumber, verifyTeacher } from "../middlewares/auth.middleware.js";
 import { upload } from "../utils/uploader.js";
 import { createCourseComment, getCourseComments } from "../controllers/courseComments.controller.js";
 import { verifyTeacherSubscription } from "../middlewares/subscription.middleware.js";
 
 const router = express.Router();
 
-router.post("/add", authenticateToken, verifyTeacher, verifyTeacherSubscription, createCourse);
+router.post("/add", authenticateToken, verifyTeacher, verifyTeacherSubscription, verifyPhoneNumber, createCourse);
 router.post("/:cId/comments/add", authenticateToken, createCourseComment);
 router.post("/:cId/videos/add", authenticateToken, verifyTeacher, createVideo);
 router.get("/", getCourses);
