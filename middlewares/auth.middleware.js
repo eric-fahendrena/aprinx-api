@@ -26,7 +26,7 @@ export const verifyAdmin = (req, res, next) => {
 
 export const verifyTeacher = (req, res, next) => {
   if (req.user.role !== "ADMIN" && req.user.role !== "TEACHER")
-    return res.status(403).json({ message: "only admin or teacher can do this action" });
+    return res.status(403).json({ message: `only admin or teacher can do this action ! Role : ${req.user.role}` });
   next();
 }
 
