@@ -86,3 +86,17 @@ export const selectVideo = async (cId, vId) => {
   ]);
   return result.rows[0];
 }
+
+/**
+ * Selects courses where user has access
+ * 
+ * @param {number} uId 
+ * @param {number|string} offset 
+ * @param {number|string} limit 
+ * @returns 
+ */
+export const selectCoursesByUserAccess = async (uId, offset, limit) => {
+  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture FROM courses INNER JOIN users ON courses.author_id = users.id INNER JOIN user_course_access ON courses.id = user_course_access.course_id WHERE user_course_access.user_id = $1 ORDER BY courses.id DESC OFFSET $2 LIMIT $3";
+  const result = await pool.query(query, [ uId, offset, limit ]);
+  return result.rows;
+}

@@ -1,4 +1,6 @@
+import { selectCoursesByUserAccess } from "../models/course.model.js";
 import * as userModel from "../models/user.model.js";
+import { selectAccessCount } from "../models/userCourseAccess.model.js";
 
 export const getProfile = async (req, res) => {
   try {
@@ -48,6 +50,47 @@ export const convertUserToTeacher = async (req, res) => {
     console.log("User id", uId);
     const convertedUser = await userModel.updateUserRoleToTeacher(uId);
     res.json(convertedUser);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+/**
+ * Gets user bought courses count
+ * 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
+ */
+export const getBoughtCoursesCount = async (req, res) => {
+  try {
+    console.log("Getting bought courses count");
+    const boughtCoursesCount = await selectAccessCount(req.user.id);
+    console.log("Bought courses count", boughtCoursesCount);
+    
+    console.log("Sending response");
+    res.json(boughtCoursesCount);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).send("Internal Server Errror");
+  }
+}
+
+/**
+ * Gets bought courses
+ * 
+ * @param {Express.Request} req 
+ * @param {Express.Response} res 
+ */
+export const getBoughtCourses = async (req, res) => {
+  const { offset, limit } = req.query;
+  try {
+    console.log("Getting bought courses...");
+    const boughtCourses = await selectCoursesByUserAccess(req.user.id, offset, limit);
+    console.log("Bought courses length", boughtCourses.length);
+    
+    console.log("Sending response");
+    res.json(boughtCourses);
   } catch (error) {
     console.error("Error", error);
     res.status(500).send("Internal Server Error");
