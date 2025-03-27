@@ -24,9 +24,13 @@ export const verifyAdmin = (req, res, next) => {
   next();
 }
 
-export const verifyTeacher = (req, res, next) => {
-  if (req.user.role !== "ADMIN" && req.user.role !== "TEACHER")
-    return res.status(403).json({ message: `only admin or teacher can do this action ! Role : ${req.user.role}` });
+export const verifyTeacher = async (req, res, next) => {
+  console.log("Verifying if user is TEACHER or ADMIN");
+  console.log("Getting user data");
+  const userData = await findById(req.user.id);
+  console.log("User role is", userData.role)
+  if (userData.role !== "ADMIN" && userData.role !== "TEACHER")
+    return res.status(403).json({ message: `only admin or teacher can do this action ! Role : ${userData.role}` });
   next();
 }
 

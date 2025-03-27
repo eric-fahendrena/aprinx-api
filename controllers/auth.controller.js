@@ -83,7 +83,7 @@ export const logout = (req, res) => {
 }
 
 /**
- * sends jwt_token
+ * Sends jwt_token
  * 
  * @param {Request} req 
  * @param {Response} res 
