@@ -34,7 +34,7 @@ export const verifyTeacherSubscription = async (req, res, next) => {
     
     if (status === "EXPIRED") {
       console.log("Subscription expired");
-      return res.status(403).json({ message: "teacher subscription expired" });
+      return res.status(403).json({ ...teacherSubscription, message: "teacher subscription expired" });
     }
 
     console.log("Subscription is ok");
