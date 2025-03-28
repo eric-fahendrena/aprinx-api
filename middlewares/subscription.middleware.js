@@ -17,7 +17,7 @@ export const verifyTeacherSubscription = async (req, res, next) => {
       teacherSubscription = await insertTeacherSubscription(req.user.id);
     }
     const days30 = 1000 * 60 * 60 * 24 * 30;
-    const exprirationDate = parseInt(teacherSubscription.date) + 1000 * 60 * 60 * 1; 
+    const exprirationDate = parseInt(teacherSubscription.date) + days30; 
     let status = "ACTIVE";
     let renewable = false;
     const week = 1000 * 60 * 60 * 24 * 7;
