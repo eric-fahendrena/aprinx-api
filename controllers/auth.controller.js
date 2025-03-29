@@ -79,6 +79,7 @@ export const logout = (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('jwt_token');
     res.json({ message: "Logout success" });
+    res.redirect(process.env.CLIENT_ORIGIN);
   });
 }
 
