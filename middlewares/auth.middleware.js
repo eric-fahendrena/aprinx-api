@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { findById } from "../models/user.model.js";
+import { findById, selectUserRole } from "../models/user.model.js";
 
-export const authenticateToken = (req, res, next) => {
+export const authenticateToken = async (req, res, next) => {
   try {
     const token = req.header("Authorization");
     if (!token) {
@@ -10,7 +10,12 @@ export const authenticateToken = (req, res, next) => {
     const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
     if (decoded.id === undefined)
       return res.status(401).json({ message: "unauthorized" });
-    req.user = decoded;
+    
+    const userData = await selectUserRole(decoded.id)
+    req.user = {
+      id: decoded.id,
+      role: userData.role,
+    };
     next();
   } catch (error) {
     console.log("Error", error);
@@ -18,9 +23,8 @@ export const authenticateToken = (req, res, next) => {
   }
 }
 
-export const verifyAdmin = async (req, res, next) => {
-  const userData = await findById(req.user.id);
-  if (userData.role !== "ADMIN")
+export const verifyAdmin = (req, res, next) => {
+  if (req.user.role !== "ADMIN")
     return res.status(403).json({ message: "only admin can do this action" });
   next();
 }
@@ -28,10 +32,8 @@ export const verifyAdmin = async (req, res, next) => {
 export const verifyTeacher = async (req, res, next) => {
   console.log("Verifying if user is TEACHER or ADMIN");
   console.log("Getting user data");
-  const userData = await findById(req.user.id);
-  console.log("User role is", userData.role);
-  if (userData.role !== "ADMIN" && userData.role !== "TEACHER")
-    return res.status(403).json({ message: `only admin or teacher can do this action ! Role : ${userData.role}` });
+  if (req.user.role !== "ADMIN" && req.user.role !== "TEACHER")
+    return res.status(403).json({ message: `only admin or teacher can do this action ! Role : ${req.user.role}` });
   next();
 }
 
