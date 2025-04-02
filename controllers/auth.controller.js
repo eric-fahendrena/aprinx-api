@@ -53,31 +53,44 @@ export const handleGoogleResponse = async (req, res) => {
       method: "POST",
       body: JSON.stringify(data),
     });
-    return await response.json();
+    const data = await response.json();
+    return data;
   };
+  
+  console.log("Getting access token data...");
   const accessTokenData = await getAccessTokenData();
+  console.log("Access token data", accessTokenData);
+
   // verify and extract the information in the id token
+  console.log("Extracting user information in the id token");
   const { id_token } = accessTokenData;
+  console.log("id_token :", id_token);
   const tokenInfoResponse = await fetch(`${process.env.GOOGLE_TOKEN_INFO_URL}?id_token=${id_token}`);
   const userTokenInfo = await tokenInfoResponse.json();
+  console.log("User token info :", userTokenInfo);
   const savedUser = await saveUser(userTokenInfo);
+  console.log("Connecting user :", savedUser);
+  
+  console.log("Generating token...");
   const jwtToken = generateToken({ id: savedUser.id, role: savedUser.role });
-  console.log("Saving to cookies");
+  console.log("JWT Token :", jwtToken);
+
+  console.log("Saving jwt token to cookies...");
   res.cookie("jwt_token", jwtToken, {
     sameSite: "none",
     httpOnly: true,
     secure: true,
     maxAge: 1000 * 60 * 60 * 24,
   });
-  console.log("Waiting for redirection");
-  setTimeout(() => {
-    res.redirect(301, process.env.CLIENT_ORIGIN);
-  }, 3000);
+  console.log("Ok, Redirecting to home...");
+  res.redirect(301, process.env.CLIENT_ORIGIN);
 };
 
 export const logout = (req, res) => {
+  console.log("Logout...");
   req.session.destroy(() => {
     res.clearCookie('jwt_token');
+    console.log("Redirecting to home...");
     res.redirect(process.env.CLIENT_ORIGIN)
   });
 }
@@ -105,13 +118,17 @@ export const sendJwtToken = (req, res) => {
  * @returns {object} newUser
  */
 async function saveUser(userData) {
+  console.log("Verifying if user already exists...");
   const user = await userModel.findByEmail(userData.email);
   if (!user){
+    console.log("User does not exist !");
+    console.log("Creating new user...");
     const newUser = await userModel.addUser(userData);
-    console.log("New user", newUser);
+    console.log("New user :", newUser);
     return newUser;
   }
-  console.log("User with the same email already exists", user.email, user.id);
+  console.log("User with the same email already exists !", user.email, user.id);
+  console.log("Let's continue");
   return user;
 }
 
