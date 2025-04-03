@@ -53,8 +53,7 @@ export const handleGoogleResponse = async (req, res) => {
       method: "POST",
       body: JSON.stringify(data),
     });
-    const data = await response.json();
-    return data;
+    return await response.json();
   };
   
   console.log("Getting access token data...");
