@@ -103,6 +103,7 @@ export const logout = (req, res) => {
 export const sendJwtToken = (req, res) => {
   try {
     console.log("sending jwt token");
+    console.log("req.cookies.jwt_token :", req.cookies.jwt_token);
     res.status(200).json({ jwt_token: req.cookies.jwt_token });
     console.log("jwt token received !");
   } catch (error) {
