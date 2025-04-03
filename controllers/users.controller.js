@@ -44,12 +44,20 @@ export const getAllUsers = async (req, res) => {
 export const convertUserToTeacher = async (req, res) => {
   const { uId } = req.params;
   try {
+    console.log("CONVERTING USER TO TEACHER");
+    console.log("--------------------------");
+
     if (!req.user) 
       return res.status(401).json({ message: "unauthorized" });
-    console.log("Role", req.user.role)
-    console.log("User id", uId);
+    console.log("req.user.role", req.user.role)
+    console.log("uid :", uId);
+
+    console.log("Converting...");
     const convertedUser = await userModel.updateUserRoleToTeacher(uId);
+    console.log("Converted user :", convertedUser);
+    
     res.json(convertedUser);
+    console.log("--------------------------");
   } catch (error) {
     console.error("Error", error);
     res.status(500).send("Internal Server Error");
