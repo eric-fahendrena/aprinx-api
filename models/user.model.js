@@ -48,7 +48,7 @@ export const findByEmail = async (email) => {
  * @returns 
  */
 export const findById = async (uId) => {
-  const query = "SELECT users.*, COUNT(courses.id) AS total_created_courses FROM users INNER JOIN courses ON users.id = courses.author_id WHERE users.id = $1 GROUP BY users.id";
+  const query = "SELECT users.*, COUNT(DISTINCT courses.id) AS total_created_courses, COUNT(DISTINCT user_course_access.id) AS total_bought_courses FROM users LEFT JOIN courses ON users.id = courses.author_id LEFT JOIN user_course_access ON users.id = user_course_access.user_id WHERE users.id = $1 GROUP BY users.id";
   const result = await pool.query(query, [uId]);
   return result.rows[0];
 }
