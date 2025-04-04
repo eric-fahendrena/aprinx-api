@@ -87,3 +87,9 @@ export const updateUserRoleToTeacher = async (userId) => {
   const result = await pool.query(query, [ userId ]);
   return result.rows[0];
 }
+
+export const selectCreatedCourses = async (userId, offset, limit) => {
+  const query = "SELECT * FROM courses WHERE author_id = $1 ORDER BY id DESC OFFSET $2 LIMIT $3";
+  const result = await pool.query(query, [ userId, offset, limit ]);
+  return result.rows;
+}

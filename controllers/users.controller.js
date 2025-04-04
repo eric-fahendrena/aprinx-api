@@ -104,3 +104,20 @@ export const getBoughtCourses = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 }
+
+export const getCreatedCourses = async (req, res) => {
+  const { offset, limit } = req.query;
+  try {
+    console.log("GETTING CREATED COURSES");
+    console.log("-----------------------");
+    console.log("offset :", offset);
+    console.log("limit :", limit);
+    const createdCourses = await userModel.selectCreatedCourses(req.user.id, offset, limit);
+    console.log("Obtained courses :", createdCourses.length);
+    console.log("------------------------")
+    res.json(createdCourses);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
