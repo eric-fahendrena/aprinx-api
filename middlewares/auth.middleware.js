@@ -26,6 +26,8 @@ export const authenticateToken = async (req, res, next) => {
       role: userData.role,
     };
     console.log("req.user :", req.user);
+
+    console.log("-----------------------");
     next();
   } catch (error) {
     console.log("Error", error);
@@ -43,6 +45,7 @@ export const verifyAdmin = (req, res, next) => {
     console.log("403, Forbidden !");
     return res.status(403).json({ message: "only admin can do this action" });
   }
+  console.log("----------------");
   next();
 }
 
@@ -59,6 +62,8 @@ export const verifyTeacher = async (req, res, next) => {
     console.log("403, Forbidden !");
     return res.status(403).json({ message: `only admin or teacher can do this action ! Role : ${req.user.role}` });
   }
+
+  console.log("------------------");
   next();
 }
 
@@ -76,5 +81,7 @@ export const verifyPhoneNumber = async (req, res, next) => {
     console.log("403, Forbidden !");
     return res.status(403).json({ message: "phone number is required" });
   }
+
+  console.log("--------------------------");
   next();
 }

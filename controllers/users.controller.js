@@ -49,7 +49,7 @@ export const convertUserToTeacher = async (req, res) => {
 
     if (!req.user) 
       return res.status(401).json({ message: "unauthorized" });
-    console.log("req.user.role", req.user.role)
+    console.log("req.user.role", req.user.role);
     console.log("uid :", uId);
 
     console.log("Converting...");
