@@ -24,6 +24,7 @@ const allowedOrigins = [
   process.env.CLIENT_ORIGIN,
   "http://localhost:5173",
   "http://192.168.43.213:5173",
+  "https://staging-aprix-madagascar.vercel.app",
 ];
 
 app.use(cors({
