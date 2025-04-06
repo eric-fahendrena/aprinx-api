@@ -77,7 +77,7 @@ export const selectUserRole = async (uId) => {
 }
 
 export const selectAllUsers = async (offset, limit) => {
-  const query = "SELECT * FROM users ORDER BY name OFFSET $1 LIMIT $2";
+  const query = "SELECT * FROM users ORDER BY id DESC OFFSET $1 LIMIT $2";
   const result = await pool.query(query, [ offset, limit ]);
   return result.rows;
 }
