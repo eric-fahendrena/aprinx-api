@@ -7,9 +7,9 @@ import pool from "../db/pool.js";
  * @param {string} type
  * @returns {object|undefined}
  */
-export const selectNotificationByCourseId = async (courseId, type) => {
-  const query = "SELECT * FROM notifications WHERE course_id = $1 AND type = $2";
-  const result = await pool.query(query, [ courseId, type ]);
+export const selectNotificationByCourseId = async (userId, courseId, type) => {
+  const query = "SELECT * FROM notifications WHERE user_id = $1 AND course_id = $2 AND type = $3";
+  const result = await pool.query(query, [ userId, courseId, type ]);
   return result.rows[0];
 }
 

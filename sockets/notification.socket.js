@@ -17,7 +17,7 @@ export const handleNotification = (io, socket) => {
     console.log(`SENDING ${type} NOTIFICATION`);
 
     console.log("Checking if same notification already exists...");
-    notification = await selectNotificationByCourseId(courseId, type);
+    notification = await selectNotificationByCourseId(userId, courseId, type);
     if (!notification) {
       console.log("Same notification doesn't still exist !");
       console.log("Creating a notification...");
