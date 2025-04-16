@@ -26,7 +26,7 @@ export const deleteCourse = async (courseId) => {
 }
 
 export const selectAllCourses = async (offset, limit) => {
-  const query = "SELECT courses.*, users.name AS author_name, users.picture AS author_picture, teacher_subscriptions.date AS author_subscription_date FROM courses INNER JOIN users ON courses.author_id = users.id INNER JOIN teacher_subscriptions ON courses.author_id = teacher_subscriptions.user_id ORDER BY courses.date DESC OFFSET $1 LIMIT $2";
+  const query = "SELECT DISTINCT ON (courses.id) courses.*, users.name AS author_name, users.picture AS author_picture, teacher_subscriptions.date AS author_subscription_date FROM courses INNER JOIN users ON courses.author_id = users.id INNER JOIN teacher_subscriptions ON courses.author_id = teacher_subscriptions.user_id ORDER BY courses.id DESC OFFSET $1 LIMIT $2";
   const result = await pool.query(query, [ offset, limit ]);
   return result.rows;
 }
