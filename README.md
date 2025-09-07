@@ -53,7 +53,7 @@ Jean Eric Razanapahendrena
 
 📧 [ericfahendrena29@gmail.com](mailto:ericfahendrena29@gmail.com)  
 
-🌐 [https://eric-razanapahendrena.vercel.app](https://eric-razanapahendrena.vercel.app)
+🌐 [https://eric-rz.vercel.app](https://eric-rz.vercel.app)
 
 
 ## 📜 License
