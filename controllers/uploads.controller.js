@@ -2,11 +2,11 @@ import AWS from "aws-sdk";
 import { nanoid } from "nanoid";
 
 const s3 = new AWS.S3({
-  endpoint: "https://gateway.storjshare.io",
-  accessKeyId: "jw75qos2eqqnxybxpoy6fabydkfq",
-  secretAccessKey: "j2iii225euzce324kbcxvdsiyz4sb2ijb2w5ebzychn6ie2npzcok",
-  signatureVersion: "v4",
-  s3ForcePathStyle: true,
+  endpoint: process.env.S3_ENDPOINT,
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  signatureVersion: process.env.S3_SIGNATURE_VERSION || 'v4',
+  s3ForcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
 });
 
 export const getPresignedUrl = async (req, res) => {
@@ -18,7 +18,15 @@ export const getPresignedUrl = async (req, res) => {
     Key: keyUnique,
   };
 
+  function getPublicFileUrl(bucket, key, projectId) {
+    const template = process.env.S3_PUBLIC_URL_TEMPLATE;
+    return template
+      .replace("{bucket}", bucket)
+      .replace("{key}", key)
+      .replace("{projectId}", projectId || "");
+  }
+
   const signedUrl = await s3.getSignedUrlPromise("putObject", params);
-  const fileUrl = `https://link.storjshare.io/raw/jvdu5csishntpzqqyf7f7tozmdnq/${bucket}/${keyUnique}`;
+  const fileUrl = getPublicFileUrl(bucket, keyUnique, projectId);
   res.json({ signedUrl, fileUrl });
 }
