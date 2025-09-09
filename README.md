@@ -30,6 +30,13 @@ npm install
 npm start
 ```
 
+You can also run test locally:
+```bash
+npm test
+# or watch mode
+npm run test:watch
+```
+
 ## 🔑 Create Admin Account
 
 Log in with a Google account. Then go to the database, in the `users` table, and set the role manually to `ADMIN`.  

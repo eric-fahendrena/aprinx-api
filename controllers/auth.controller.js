@@ -144,3 +144,6 @@ function generateToken(data) {
   const token = jwt.sign(data, JWT_SECRET, { expiresIn: 24 * 60 * 60 });
   return token;
 }
+
+// Export internals for unit testing (keeps default exports unchanged)
+export { generateToken, saveUser };
