@@ -9,7 +9,7 @@ CREATE TABLE users (
     picture TEXT,
     phone_number VARCHAR(50),
     phone_number_associated_name VARCHAR(255),
-    role VARCHAR(50)
+    role VARCHAR(50) DEFAULT 'USER'
 );
 
 -- Table des cours
